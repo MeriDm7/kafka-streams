@@ -1,5 +1,6 @@
 package com.epam.bd201;
 
+import com.epam.bd201.map.InputMapper;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -16,24 +17,22 @@ public class KStreamsApplication {
     public static void main(String[] args) throws Exception {
 
         Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "INSERT_YOUR_APP_ID");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "INSERT_YOUR_BOOTSTRAP_IP:PORT");
-        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, "INSERT_YOUR_KEY_SERDE_CLASS_HERE");
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, "INSERT_YOUR_VALUE_SERDE_CLASS_HERE");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "kafka-streams-hw");
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         //If needed
-        props.put("schema.registry.url", "INSERT_YOUR_SCHEMA_REGISTRY_IP:PORT");
+        props.put("schema.registry.url", "schemaregistry:8081");
 
-        final String INPUT_TOPIC_NAME = "";
-        final String OUTPUT_TOPIC_NAME = "";
+        final String INPUT_TOPIC_NAME = "expedia";
+        final String OUTPUT_TOPIC_NAME = "expedia_ext";
 
         final StreamsBuilder builder = new StreamsBuilder();
 
         final KStream<String, String> input_records = builder.stream(INPUT_TOPIC_NAME, Consumed.with(Serdes.String(), Serdes.String()));
 
         //Transform your records here
-        //input_records.map();
-
-        input_records.to(OUTPUT_TOPIC_NAME);
+        input_records.mapValues(InputMapper::calculateDuration).to(OUTPUT_TOPIC_NAME);
 
         final Topology topology = builder.build();
         System.out.println(topology.describe());

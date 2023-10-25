@@ -1,4 +1,15 @@
 {
   "name": "expedia",
-  "_comment": "Modify configuration for your needs"
+  "config": {
+    "connector.class": "io.confluent.connect.azure.blob.storage.AzureBlobStorageSourceConnector",
+    "tasks.max": "1",
+    "azblob.account.name": "<ACCOUNT_NAME>",
+    "azblob.account.key": "<ACCOUNT_KEY>",
+    "azblob.container.name": "<CONTAINER_NAME>",
+    "format.class": "io.confluent.connect.azure.blob.storage.format.avro.AvroFormat",
+    "confluent.topic.bootstrap.servers": "kafka:9092",
+    "confluent.topic.replication.factor": "3"
+  }
 }
+
+
